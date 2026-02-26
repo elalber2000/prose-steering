@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 
 class config(BaseModel):
-    DEFAULT_MODEL: str = "Qwen/Qwen2.5-3B-Instruct"
-    DEFAULT_NEUTRAL_SYSTEM: str = (
+    default_model: str = "Qwen/Qwen2.5-3B-Instruct"
+    default_neutral_prompt: str = (
         "You are a writing engine. Do not add preambles, disclaimers, or commentary. "
         "Output only the requested text."
     )

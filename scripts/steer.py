@@ -13,11 +13,11 @@ torch.set_grad_enabled(False)
 
 
 if __name__ == "__main__":
-    CFG = config()
+    config = config()
 
     axis = load_axis("dataset/high_prose.json")
 
-    model, tokenizer, device, stop_ids = load_model_and_tokenizer(CFG.DEFAULT_MODEL)
+    model, tokenizer, device, stop_ids = load_model_and_tokenizer(config.default_model)
 
     layers = get_decoder_layers(model)
     n_layers = len(layers)
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         K=32,
     )
 
-    neutral_sys_prompt = CFG.DEFAULT_NEUTRAL_SYSTEM
+    neutral_sys_prompt = config.default_neutral_prompt
     test_question = "Write exactly 5 lines. Each line must be 6-12 words. No title."
 
     print(f"Using layer {hook_layer_idx} / {n_layers-1} for mid-layer steering.")
@@ -49,8 +49,8 @@ if __name__ == "__main__":
             user_question=test_question,
             alpha=0.0,
             layer_idx=hook_layer_idx,
-            temperature=CFG.temperature,
-            top_p=CFG.top_p,
+            temperature=config.temperature,
+            top_p=config.top_p,
         )
     )
 
@@ -69,8 +69,8 @@ if __name__ == "__main__":
                 user_question=test_question,
                 alpha=+alpha,
                 layer_idx=hook_layer_idx,
-                temperature=CFG.temperature,
-                top_p=CFG.top_p,
+                temperature=config.temperature,
+                top_p=config.top_p,
             )
         )
 
@@ -86,8 +86,8 @@ if __name__ == "__main__":
                 user_question=test_question,
                 alpha=-alpha,
                 layer_idx=hook_layer_idx,
-                temperature=CFG.temperature,
-                top_p=CFG.top_p,
+                temperature=config.temperature,
+                top_p=config.top_p,
             )
         )
 
@@ -105,9 +105,9 @@ if __name__ == "__main__":
                 system_neg=axis.negative_dir,
                 user_question=test_question,
                 beta=beta,
-                temperature=CFG.temperature,
-                top_p=CFG.top_p,
-                top_k=CFG.top_k,
-                clamp=CFG.clamp,
+                temperature=config.temperature,
+                top_p=config.top_p,
+                top_k=config.top_k,
+                clamp=config.clamp,
             )
         )
