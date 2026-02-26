@@ -1,5 +1,6 @@
 from itertools import product
 
+from src.prose_steering.steer import capture_layer_rms
 import torch
 
 from prose_steering.axis import load_axis
@@ -21,7 +22,14 @@ if __name__ == "__main__":
 
     layers = get_decoder_layers(model)
     n_layers = len(layers)
-    hook_layer_idx = n_layers // 2
+
+    # move later
+    hook_layer_idx = int(0.85 * (n_layers - 1))
+
+    # compute RMS scale at that layer (average pos/neg personas)
+    rms_pos = capture_layer_rms(model, tokenizer, device, axis, layers, axis["positive_dir"], hook_layer_idx, K=32)
+    rms_neg = capture_layer_rms(model, tokenizer, device, axis, layers, axis["negative_dir"], hook_layer_idx, K=32)
+    rms_scale = 0.5 * (rms_pos + rms_neg)
 
     steer = compute_steer_vector(
         model=model,
@@ -55,7 +63,7 @@ if __name__ == "__main__":
     )
 
     for alpha, i in product([2, 4, 9], range(3)):
-        beta = alpha / 2
+        beta = alpha / 10
 
         print(f"\n=== Mid-layer steered toward {axis.feature} (alpha=+{alpha}) ===")
         print(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import torch
+import math
 
 from prose_steering.hf import decode_new_tokens, format_dialogue, get_decoder_layers
 from prose_steering.utils import top_p_sample
@@ -33,6 +34,39 @@ def capture_layer_output_mean(model, tokenizer, device, axis, layer_idx: int, K:
         vecs.append(h_tail)
 
     return torch.stack(vecs, dim=0).mean(dim=0)
+
+
+def capture_layer_rms(model, tokenizer, device, axis, layers, system_prefix: str, layer_idx: int, K: int = 32) -> float:
+    """
+    Returns mean RMS of hidden state at layer output over last K prompt tokens.
+    RMS is computed per token as ||h||/sqrt(D), then averaged.
+    """
+    layer = layers[layer_idx]
+    rms_vals = []
+
+    for q in axis["prompts"]:
+        text = format_dialogue(system_prefix, q)
+        inputs = tokenizer(text, return_tensors="pt").to(device)
+
+        captured = {}
+
+        def capture_hook(module, inp, out):
+            h = out[0] if isinstance(out, (tuple, list)) else out  # [B, S, D]
+            captured["h"] = h.detach()
+
+        hndl = layer.register_forward_hook(capture_hook)
+        try:
+            _ = model(**inputs, use_cache=False, return_dict=True)
+        finally:
+            hndl.remove()
+
+        h = captured["h"][0]            # [S, D]
+        h_tail = h[-K:, :]              # [K, D]
+        D = h_tail.shape[-1]
+        token_rms = h_tail.norm(dim=-1) / math.sqrt(D)   # [K]
+        rms_vals.append(token_rms.mean().item())
+
+    return float(sum(rms_vals) / len(rms_vals))
 
 
 @torch.no_grad()
@@ -73,35 +107,28 @@ def generate_midlayer_steered(
     prompt = format_dialogue(tokenizer, system_prefix, user_question)
     prompt_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
 
+    out0 = model(input_ids=prompt_ids, use_cache=True, return_dict=True)
+    past = out0.past_key_values
+    generated = prompt_ids
+
     layers = get_decoder_layers(model)
     layer = layers[layer_idx]
 
-    past = None
-    generated = prompt_ids
+    steer_vec = steer.to(dtype=next(model.parameters()).dtype)  # fp16 typically
 
-    def steer_hook(_, __, out):
+    def steer_hook(module, inp, out):
         h = out[0] if isinstance(out, (tuple, list)) else out
-        h = h + alpha * steer.view(1, 1, -1).to(dtype=h.dtype, device=h.device)
-        if isinstance(out, (tuple, list)):
-            return (h,) + tuple(out[1:])
-        return h
+        sv = steer_vec.to(device=h.device, dtype=h.dtype).view(1, 1, -1)
+        return ((h + alpha * sv),) + tuple(out[1:]) if isinstance(out, (tuple, list)) else (h + alpha * sv)
 
     hndl = layer.register_forward_hook(steer_hook)
     try:
         for _ in range(max_new_tokens):
-            out = model(
-                input_ids=generated[:, -1:] if past is not None else generated,
-                past_key_values=past,
-                use_cache=True,
-                return_dict=True,
-            )
+            out = model(input_ids=generated[:, -1:], past_key_values=past, use_cache=True, return_dict=True)
             past = out.past_key_values
             logits = out.logits[:, -1, :]
-
             next_id = top_p_sample(logits, temperature=temperature, top_p=top_p)
-            next_tok = torch.tensor([[next_id]], device=device)
-            generated = torch.cat([generated, next_tok], dim=1)
-
+            generated = torch.cat([generated, torch.tensor([[next_id]], device=generated.device)], dim=1)
             if next_id in stop_ids:
                 break
     finally:
