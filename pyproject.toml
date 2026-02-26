@@ -1,0 +1,57 @@
+[project]
+name = "prose-steering"
+version = "0.1.0"
+description = "A mechinterpr project to do activation steering on high prose"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "torch",
+  "transformers>=4.42.0",
+  "accelerate>=0.30.0",
+  "safetensors",
+  "typer>=0.12.0",
+  "rich>=13.7.0",
+  "pydantic>=2.12.5",
+]
+
+[project.scripts]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=69", "uv"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+  "ruff",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "pytest-xdist",
+  "pre-commit",
+  "types-click",
+  "pandas-stubs",
+  "ipykernel",
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+fix = true
+
+[tool.ruff.lint]
+extend-select = ["I", "UP", "B", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+mypy_path = "src"
+explicit_package_bases = true
