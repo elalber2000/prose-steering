@@ -22,8 +22,8 @@ def generate_contrastive(
     top_k: int = 200,
     clamp: float = 10.0,
 ) -> str:
-    prompt_pos = format_dialogue(tokenizer, system_pos, user_question)
-    prompt_neg = format_dialogue(tokenizer, system_neg, user_question)
+    prompt_pos = format_dialogue(system_pos, user_question)
+    prompt_neg = format_dialogue(system_neg, user_question)
 
     ids_pos = tokenizer(prompt_pos, return_tensors="pt").input_ids.to(device)
     ids_neg = tokenizer(prompt_neg, return_tensors="pt").input_ids.to(device)
@@ -65,7 +65,7 @@ def generate_contrastive(
 
         sorted_probs, sorted_i = torch.sort(probs, descending=True)
         cumsum = torch.cumsum(sorted_probs, dim=-1)
-        cutoff = torch.searchsorted(cumsum, torch.tensor(top_p, device=device))
+        cutoff = torch.searchsorted(cumsum, torch.tensor(top_p, device=cumsum.device))
         cutoff = max(1, int(cutoff.item()) + 1)
 
         filt_probs = sorted_probs[:cutoff]

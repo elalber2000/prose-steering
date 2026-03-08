@@ -21,7 +21,7 @@ def load_model_and_tokenizer(
     if tok.pad_token_id is None:
         tok.pad_token = tok.eos_token
 
-    device = mdl.device
+    device = next(mdl.parameters()).device
 
     im_end_id = tok.convert_tokens_to_ids("<|im_end|>")
     stop_ids = {tok.eos_token_id}
@@ -31,12 +31,16 @@ def load_model_and_tokenizer(
     return mdl, tok, device, stop_ids
 
 
-def format_dialogue(tokenizer, system_prefix: str, user_question: str) -> str:
+def format_dialogue(system_prefix: str, user_question: str) -> str:
     messages = []
     if system_prefix and system_prefix.strip():
         messages.append({"role": "system", "content": system_prefix.strip()})
     messages.append({"role": "user", "content": user_question.strip()})
-    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    return tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True,
+    )
 
 
 def decode_new_tokens(tokenizer, prompt_ids: torch.Tensor, full_ids: torch.Tensor) -> str:

@@ -14,7 +14,7 @@ def capture_layer_output_mean(model, tokenizer, device, axis, layer_idx: int, K:
 
     vecs = []
     for q in axis.prompts:
-        text = format_dialogue(tokenizer, axis_prompt_prefix, q)  # set below by closure
+        text = format_dialogue(axis_prompt_prefix, q)  # set below by closure
         inputs = tokenizer(text, return_tensors="pt").to(device)
 
         captured = {}
@@ -104,17 +104,15 @@ def generate_midlayer_steered(
     temperature: float = 0.7,
     top_p: float = 0.9,
 ) -> str:
-    prompt = format_dialogue(tokenizer, system_prefix, user_question)
+    prompt = format_dialogue(system_prefix, user_question)
     prompt_ids = tokenizer(prompt, return_tensors="pt").input_ids.to(device)
 
-    out0 = model(input_ids=prompt_ids, use_cache=True, return_dict=True)
-    past = out0.past_key_values
     generated = prompt_ids
 
     layers = get_decoder_layers(model)
     layer = layers[layer_idx]
 
-    steer_vec = steer.to(dtype=next(model.parameters()).dtype)  # fp16 typically
+    steer_vec = steer.to(dtype=next(model.parameters()).dtype)
 
     def steer_hook(module, inp, out):
         h = out[0] if isinstance(out, (tuple, list)) else out
@@ -123,15 +121,22 @@ def generate_midlayer_steered(
 
     hndl = layer.register_forward_hook(steer_hook)
     try:
+        out = model(input_ids=prompt_ids, use_cache=True, return_dict=True)
+        past = out.past_key_values
+        logits = out.logits[:, -1, :]
+
         for _ in range(max_new_tokens):
-            out = model(input_ids=generated[:, -1:], past_key_values=past, use_cache=True, return_dict=True)
-            past = out.past_key_values
-            logits = out.logits[:, -1, :]
             next_id = top_p_sample(logits, temperature=temperature, top_p=top_p)
-            generated = torch.cat([generated, torch.tensor([[next_id]], device=generated.device)], dim=1)
+            next_tok = torch.tensor([[next_id]], device=prompt_ids.device)
+            generated = torch.cat([generated, next_tok], dim=1)
+
             if next_id in stop_ids:
                 break
+
+            out = model(input_ids=next_tok, past_key_values=past, use_cache=True, return_dict=True)
+            past = out.past_key_values
+            logits = out.logits[:, -1, :]
     finally:
         hndl.remove()
 
-    return decode_new_tokens(tokenizer, prompt_ids, generated)
+    return decode_new_tokens(prompt_ids, generated)

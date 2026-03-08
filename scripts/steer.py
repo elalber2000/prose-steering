@@ -1,4 +1,5 @@
 from itertools import product
+from functools import partial
 
 from src.prose_steering.steer import capture_layer_rms
 import torch
@@ -45,20 +46,25 @@ if __name__ == "__main__":
 
     print(f"Using layer {hook_layer_idx} / {n_layers-1} for mid-layer steering.")
 
+    generate_midlayer_steered = partial(
+        generate_midlayer_steered,
+        model=model,
+        tokenizer=tokenizer,
+        device=device,
+        stop_ids=stop_ids,
+        steer=steer,
+        layer_idx=hook_layer_idx,
+        temperature=config.temperature,
+        top_p=config.top_p,
+
+    )
+
     print("\n=== Baseline (no steering) ===")
     print(
         generate_midlayer_steered(
-            model=model,
-            tokenizer=tokenizer,
-            device=device,
-            stop_ids=stop_ids,
-            steer=steer,
             system_prefix=neutral_sys_prompt,
             user_question=test_question,
             alpha=0.0,
-            layer_idx=hook_layer_idx,
-            temperature=config.temperature,
-            top_p=config.top_p,
         )
     )
 
@@ -68,34 +74,18 @@ if __name__ == "__main__":
         print(f"\n=== Mid-layer steered toward {axis.feature} (alpha=+{alpha}) ===")
         print(
             generate_midlayer_steered(
-                model=model,
-                tokenizer=tokenizer,
-                device=device,
-                stop_ids=stop_ids,
-                steer=steer,
                 system_prefix=neutral_sys_prompt,
                 user_question=test_question,
                 alpha=+alpha,
-                layer_idx=hook_layer_idx,
-                temperature=config.temperature,
-                top_p=config.top_p,
             )
         )
 
         print(f"\n=== Mid-layer steered away from {axis.feature} (alpha=-{alpha}) ===")
         print(
             generate_midlayer_steered(
-                model=model,
-                tokenizer=tokenizer,
-                device=device,
-                stop_ids=stop_ids,
-                steer=steer,
                 system_prefix=neutral_sys_prompt,
                 user_question=test_question,
                 alpha=-alpha,
-                layer_idx=hook_layer_idx,
-                temperature=config.temperature,
-                top_p=config.top_p,
             )
         )
 
