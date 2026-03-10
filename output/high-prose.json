@@ -1,0 +1,48 @@
+{
+  "spec_dec": {
+    "0.2": [
+      "Upon the solemn canvas of eternity,\nTime's silent whisper dances upon the air.\nAncient constellations align with celestial fires.\nIn whispered murmurs, the cosmos shares its secrets.\nThus, in silent eloquence, nature unfolds its grand design."
+    ],
+    "0.4": [
+      "Upon verdant realms the sun descended,\nNature hushed, a tapestry of shadows spread.\nSilent streams mirrored the starlit heavens,\nBirds, returning from midday solitary flights.\nNight embraced the earth in cloaks of starlight."
+    ],
+    "0.9": [
+      "Manifest elegance engenders transcendent comprehension wherein intellectual distinctions lux Urnobastically disclose themselves res maideni filidi.\nRadiosa vitae perfigit specularity as integral adjunct comprehensive eloquéssía confide tranquillos quantum intellectual terríga ærialitate spérièia significentque.\nDivine adfection incermene omnipendent dominacula vastaque vastam infinitá humines res judićió dictaturas juris êst.\nPristerna persolutio substantivar cadulum promovere magénicos consursan maxore concesso postior vitto saqiin regia velamina succèto res gestisci certitudini sintagma proffi ègestalis illustrántistha locunda stationis maximas sequantiformibvs quia minorum ab homina debëant consutoriae verba diligeent que dominæ formántica deíbe perpetión"
+    ]
+  },
+  "steering": {
+    "0": [
+      "Sunrise painted the sky orange.\nBirds chirped, awakening from their rest.\nChildren played, laughter filling the air.\nLeaves danced in the gentle morning breeze.\nDaybreak brought new hope and light."
+    ],
+    "2": [
+      "Sunrise paints the eastern sky.\nGolden rays stretch across the valley.\nBirds take flight with morning's warmth.\nNature awakens, beginning its day.\nPeace fills the air, a tranquil dawn.",
+      "Sunrise painted the sky orange.\nBirds chirped in the tranquil forest.\nChildren laughed as they played games.\nEvening stars twinkled in the dark.\nMoonlight bathed the peaceful village.",
+      "Sunrise painted the sky in hues.\nBirds chirped happily in the trees.\nChildren played on the warm grass.\nMoments felt perfect, time stood still.\nDreams of adventure danced in their hearts."
+    ],
+    "-2": [
+      "The sun sets, painting the sky.\nStars twinkle, guiding lost travelers.\nMoon rises, illuminating dark paths.\nNight whispers secrets to the wind.\nDreams dance, under the watchful sky.",
+      "Sunset painted skies with orange hues.\nLeaves rustle under evening's soft breeze.\nStars twinkle, guiding lost travelers.\nMoonlight bathes the quiet, peaceful town.\nDreams float, as night's embrace enfolds.",
+      "Sunrise painted the sky in hues.\nBirds chirped, waking up sleepy nature.\nChildren played under the morning sun.\nLeaves rustled, dancing in the breeze.\nDaybreak brought life to every scene."
+    ],
+    "4": [
+      "Sunset painted skies with orange.\nWhispers of nightfall through the leaves.\nStars twinkle, guiding lost travelers.\nMoonrise softens shadows into light.\nDreams float on currents of starlight.",
+      "Sunrise painted the sky in hues.\nBirds chirped happily in the trees.\nChildren played under the warm sun.\nOld oak stood tall, ancient and wise.\nDaylight slowly gave way to night.",
+      "Sunrise paints the eastern sky.\nGolden light stretches across fields.\nBirds take flight, heralding dawn's call.\nCrops stand still, bathed in soft, warm glow.\nDaybreak whispers softly, nature's gentle song."
+    ],
+    "-4": [
+      "Sunrise painted skies in hues.\nBirds sing sweet melodies across.\nNature's breath fills quiet mornings.\nLeaves dance gently in morning breeze.\nDaybreak whispers, morning begins.",
+      "The sun sets over the distant hills.\nCrickets chirp in the quiet evening.\nStars twinkle above, guiding the way.\nMoonlight bathes the sleeping village softly.\nChildren dream under the starlit sky.",
+      "Sunrise painted the sky in hues.\nBirds chirped, waking the sleepy town.\nChildren played, chasing the morning breeze.\nLeaves rustled under their playful feet.\nDaybreak brought new beginnings to life."
+    ],
+    "9": [
+      "Sunrise painted the sky with hues.\nBirds chirped, nature's symphony began.\nFields stretched under a vast blue sky.\nFarmers prepared, harvest season's near.\nChildren laughed, joy in every step.",
+      "Sunrise paints the eastern sky.\nMountains stretch into the horizon.\nBeneath them, a river flows quietly.\nBirds take flight with morning light.\nPeace fills the tranquil, early morning.",
+      "Sunset painted skies in hues.\nWhispers of the night wind serene.\nMoonlit paths guided by stars.\nDreams float under vast, silent skies.\nSleep whispers softly to the earth."
+    ],
+    "-9": [
+      "Sunset paints the sky in hues.\nTrees stand silent, leaves rustling.\nMoonrise lights up the darkening night.\nStars twinkle, a cosmic dance.\nDreams float, as quiet as the night.",
+      "Sunset paints the sky with hues.\nMountains stand still in the fading light.\nCrickets chirp, nature's soft lullaby.\nFields of gold whisper secrets of summer.\nStars emerge, guiding lost travelers.",
+      "Sunset paints the sky with gold.\nWhispers of night begin to fill.\nStars twinkle, setting a new scene.\nMoon rises, guiding the unseen.\nDreams dance under the starlit sky."
+    ]
+  }
+}
